@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export abstract class ManipulateUser {
+export abstract class ManipulateUsers {
     abstract read(id: number): Promise<object>
     abstract create(): Promise<void>
     abstract delete(id: number): Promise<void>
