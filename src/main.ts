@@ -1,13 +1,13 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { MainModule } from './modules/main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe())
+  const app = await NestFactory.create(MainModule);
+  app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
-    .setTitle('Alphabet prototype')
-    .setDescription('The alphabet API description')
+    .setTitle('Project alphabet')
+    .setDescription('The alphabet API description.')
     .setVersion('1.0')
     .addTag('testing')
     .build();

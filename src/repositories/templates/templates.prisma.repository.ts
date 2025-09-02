@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { ManipulateTemplates } from './templates.contract';
 import { PrismaService } from 'src/database/prisma.service';
-import { ManipulateResumes } from './resumes.repository';
 
-@Injectable()
-export class PrismaManipulationResumes implements ManipulateResumes {
+Injectable()
+export class PrismaManipulationTemplates  implements ManipulateTemplates {
   constructor(private prisma: PrismaService) {}
   read(): Promise<object> {
     throw new Error('Method not implemented.');
