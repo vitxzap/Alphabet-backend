@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, Query, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, } from '@nestjs/common';
 import { CreateUserDto, FindUserDto } from 'src/dtos/user/users.dto';
 import { UsersService } from 'src/services/users/users.service';
 
@@ -7,7 +7,7 @@ import { UsersService } from 'src/services/users/users.service';
 export class UsersController {
     constructor (private usersService: UsersService){}
     @Get()
-     findAll(@Query() { id }: FindUserDto){
+     findById(@Query() { id }: FindUserDto){
         return this.usersService.findById(id)
     }
 
