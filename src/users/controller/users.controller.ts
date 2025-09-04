@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Query, } from '@nestjs/common';
-import { CreateUserDto, FindUserDto } from 'src/dtos/user/users.dto';
-import { UsersService } from 'src/services/users/users.service';
+import { CreateUserDto, FindUserDto } from 'src/users/dto/users.dto';
+import { UsersService } from 'src/users/users.service';
 
 
 @Controller("/v1/user")

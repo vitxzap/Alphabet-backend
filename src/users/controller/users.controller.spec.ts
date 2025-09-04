@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { User } from 'src/dtos/user/users.interface';
-import { UsersService } from 'src/services/users/users.service';
-import { CreateUserDto, FindUserDto } from 'src/dtos/user/users.dto';
+import { UsersController } from 'src/users/controller/users.controller';
+import { User } from 'src/users/interface/users.interface';
+import { UsersService } from 'src/users/users.service';
+import { CreateUserDto, FindUserDto } from 'src/users/dto/users.dto';
 import { randomInt } from 'node:crypto';
 const mockUser: User = {
   id: 'daa63f9f-7821-4675-97d7-5df1c855a048',
