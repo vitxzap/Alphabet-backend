@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { UsersContracts } from './users.contract';
-import { User } from 'src/dtos/user/users.interface';
-import { CreateUserDto } from 'src/dtos/user/users.dto';
+import { UsersContracts } from './users.contract'; 
+import { User } from 'src/users/interface/users.interface';
+import { CreateUserDto } from 'src/users/dto/users.dto';
 
 @Injectable()
 export class UsersPrismaRepository implements UsersContracts {
