@@ -1,13 +1,65 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model tb_test {
-  id_test Int     @id @default(autoincrement())
-  nm_test String? @db.VarChar(100)
+model tb_permission {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique @db.VarChar(48)
+  isvalid            Boolean?             @default(true)
+  tb_role_permission tb_role_permission[]
+}
+
+model tb_provider {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(32)
+  isactive  Boolean?  @default(true)
+  createdat DateTime  @default(now()) @db.Timestamp(6)
+  updatedat DateTime  @default(now()) @db.Timestamp(6)
+  tb_user   tb_user[]
+}
+
+model tb_role {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(16)
+  isvalid            Boolean?             @default(true)
+  tb_role_permission tb_role_permission[]
+  tb_user            tb_user[]
+}
+
+model tb_role_permission {
+  id            Int           @id @default(autoincrement())
+  roleid        Int
+  permissionid  Int
+  tb_permission tb_permission @relation(fields: [permissionid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_role       tb_role       @relation(fields: [roleid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tb_user {
+  id              String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name            String            @db.VarChar(20)
+  lastname        String            @db.VarChar(20)
+  email           String            @unique @db.VarChar(150)
+  password        String            @db.VarChar(191)
+  providerid      Int
+  icon            String?
+  roleid          Int               @default(1)
+  createdat       DateTime          @default(now()) @db.Timestamp(6)
+  updatedat       DateTime          @default(now()) @db.Timestamp(6)
+  tb_provider     tb_provider       @relation(fields: [providerid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_role         tb_role           @relation(fields: [roleid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tb_user_session tb_user_session[]
+}
+
+model tb_user_session {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userid    String   @db.Uuid
+  ipadress  String   @db.VarChar(16)
+  createdat DateTime @default(now()) @db.Timestamp(6)
+  tb_user   tb_user  @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
