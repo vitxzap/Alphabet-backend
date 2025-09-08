@@ -3,11 +3,9 @@ import {
   ArgumentsHost,
   ExceptionFilter,
   HttpStatus,
-  ForbiddenException,
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { Response } from 'express';
-import { timestamp } from 'rxjs';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter implements ExceptionFilter {
@@ -45,17 +43,4 @@ export class PrismaClientValidationFilter implements ExceptionFilter {
   }
 }
 
-@Catch(ForbiddenException)
-export class ForbiddendFilter implements ExceptionFilter {
-    catch(exception: ForbiddenException, host: ArgumentsHost) {
-        const ctx = host.switchToHttp();
-        const response = ctx.getResponse<Response>();
-        const status = HttpStatus.FORBIDDEN
 
-        response.status(status).json({
-            message: exception.message,
-            statusCode: status,
-            timestamp: new Date().toISOString();
-        })
-       }
-}
