@@ -3,6 +3,7 @@ import { MainModule } from './modules/main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import {
+  ForbiddendFilter,
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
@@ -21,6 +22,7 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalFilters(new PrismaClientExceptionFilter());
   app.useGlobalFilters(new PrismaClientValidationFilter());
+  app.useGlobalFilters(new ForbiddendFilter());
   await app.listen(process.env.PORT ?? 3000);
 }
 
