@@ -2,6 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { MainModule } from './modules/main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import {
+  PrismaClientExceptionFilter,
+  PrismaClientValidationFilter,
+} from './filters/prisma.filter';
 async function bootstrap() {
   const app = await NestFactory.create(MainModule);
   app.useGlobalPipes(new ValidationPipe());
@@ -14,6 +18,8 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('v1/docs', app, documentFactory);
   app.enableCors();
+  app.useGlobalFilters(new PrismaClientExceptionFilter());
+  app.useGlobalFilters(new PrismaClientValidationFilter());
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
