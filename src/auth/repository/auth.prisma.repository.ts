@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { AuthContracts } from './auth.contract';
 import { logInDto, signInDto } from 'src/auth/dto/auth.dto';
 import { encryptPassword, comparePassword } from './crypt';
 import { Prisma } from 'generated/prisma';
+import { PrismaClientUnknownRequestError } from 'generated/prisma/runtime/library';
 
 @Injectable()
 export class AuthPrismaRepository implements AuthContracts {
@@ -17,9 +18,7 @@ export class AuthPrismaRepository implements AuthContracts {
       response.password,
     );
     if (!isPasswordValid) {
-      throw new Prisma.PrismaClientValidationError('Invalid Password', {
-        clientVersion: '6.15.0',
-      });
+      throw new ForbiddenException("Incorrect password.")
     }
     delete (response as any).password;
     return response;

@@ -13,13 +13,19 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = HttpStatus.INTERNAL_SERVER_ERROR;
-    response.status(status).json({
-      statusCode: status,
-      error: exception.code,
-      cause: exception.meta?.cause,
-      message: exception.meta?.message,
-      timestamp: new Date().toISOString(),
-    });
+    if ((exception.code = 'P2002')) {
+      response.status(status).json({
+        statusCode: status,
+        ...exception,
+        message: 'This user already exists.',
+      });
+    } else {
+      response.status(status).json({
+        statusCode: status,
+        ...exception,
+        timestamp: new Date().toISOString(),
+      });
+    }
   }
 }
 
@@ -29,12 +35,13 @@ export class PrismaClientValidationFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const status = HttpStatus.BAD_REQUEST;
-
+    console.log("bateu")
     response.status(status).json({
       statusCode: status,
-      error: exception.name,
-      clientVersion: exception.clientVersion,
+      ...exception,
       timestamp: new Date().toISOString(),
     });
   }
 }
+
+
