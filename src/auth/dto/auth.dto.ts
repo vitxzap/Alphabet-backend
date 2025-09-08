@@ -2,14 +2,13 @@ import {
   IsAlpha,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
 
-
-
-export class CreateUserDto {
+export class signInDto {
   @IsEmail()
   email: string;
 
@@ -24,18 +23,20 @@ export class CreateUserDto {
   @IsAlpha()
   lastName: string;
 
-  @IsUUID()
-  authProvider: string;
+  
+  @IsOptional()
+  icon: string;
+
+  @IsNumber()
+  provider: number;
 }
 
-export class FindUserDto {
+export class logInDto {
   @IsNotEmpty()
-  id: number;
-}
+  email: string;
 
-export class DeleteUserDto {
-  @IsUUID()
-  id: string;
+  @IsNotEmpty()
+  password: string;
 }
 
 export class UpdateUserDto {
@@ -55,7 +56,8 @@ export class UpdateUserDto {
   @IsAlpha()
   lastName?: string;
 
-  profilePicture?: any;
+  @IsString()
+  icon?: string;
 
   @IsUUID()
   authProvider: string;

@@ -6,6 +6,7 @@ import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
+import { ForbiddendFilter } from './filters/filter';
 async function bootstrap() {
   const app = await NestFactory.create(MainModule);
   app.useGlobalPipes(new ValidationPipe());
@@ -20,6 +21,8 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalFilters(new PrismaClientExceptionFilter());
   app.useGlobalFilters(new PrismaClientValidationFilter());
+  app.useGlobalFilters(new ForbiddendFilter());
   await app.listen(process.env.PORT ?? 3000);
 }
+
 bootstrap();
