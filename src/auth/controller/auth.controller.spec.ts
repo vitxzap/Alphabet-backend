@@ -1,19 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from 'src/auth/controller/auth.controller';
-import { Auth } from 'src/auth/interface/auth.interface';
 import { AuthService } from 'src/auth/auth.service';
 import { signInDto, logInDto } from 'src/auth/dto/auth.dto';
-const mockUser: Auth = {
-  id: 'daa63f9f-7821-4675-97d7-5df1c855a048',
-  email: 'jonhdoe@gmail.com',
-  provider: 1,
-  name: 'Jonh',
-  lastName: 'Doe',
-  roleId: 1,
-};
 
-describe('Auth Controller', () => {
-  let controller: AuthController;
+describe('Auth Controller', () => { //Testing controller logics
+  let controller: AuthController; 
   let service: AuthService;
   const mockAuthService = {
     login: jest.fn((value) => {

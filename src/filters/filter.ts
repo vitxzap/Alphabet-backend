@@ -8,7 +8,7 @@ import {
 import { Response } from 'express';
 
 @Catch(ForbiddenException)
-export class ForbiddendFilter implements ExceptionFilter {
+export class ForbiddendFilter implements ExceptionFilter { //Handles with Forbidden errors
   catch(exception: ForbiddenException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
