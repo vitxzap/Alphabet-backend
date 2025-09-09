@@ -1,18 +1,19 @@
-import { Injectable } from "@nestjs/common";
-import { signInDto } from "src/auth/dto/auth.dto";
-import { AuthContracts } from "./repository/auth.contract";
-
+import { Injectable } from '@nestjs/common';
+import { logInDto, signInDto, UserLoginInformation } from 'src/auth/dto/auth.dto';
+import { AuthContracts } from './repository/auth.contract';
 
 @Injectable()
-export class AuthService  { //Auth methods
-    constructor(private contracts: AuthContracts) {}
-    logIn(id: any) {
-        return this.contracts.logIn(id)
-    }
+export class AuthService {
+  constructor(private contracts: AuthContracts) {}
+  validateSession(sessionId: string) {
+    return this.contracts.validateSession(sessionId);
+  }
 
-    signIn(user: signInDto){
-        return this.contracts.signIn(user)
-    }
+  logIn(user: logInDto, ip: string) {
+    return this.contracts.logIn(user, ip);
+  }
 
-    
+  signIn(user: signInDto) {
+    return this.contracts.signIn(user);
+  }
 }

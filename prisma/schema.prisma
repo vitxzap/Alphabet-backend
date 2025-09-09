@@ -59,7 +59,7 @@ model tb_user {
 model tb_user_session {
   id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   userid    String   @db.Uuid
-  ipadress  String   @db.VarChar(16)
+  ipadress  String   @db.VarChar(64)
   createdat DateTime @default(now()) @db.Timestamp(6)
   tb_user   tb_user  @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

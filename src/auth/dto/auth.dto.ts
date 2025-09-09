@@ -47,6 +47,8 @@ export class logInDto {
   password: string;
 }
 
+
+
 export class UpdateUserDto {
   @IsUUID()
   @IsNotEmpty()
@@ -99,7 +101,7 @@ export class UserLoginInformation {
   providerid: number;
 
   @ApiProperty({ example: 'icon.png' })
-  icon: string;
+  icon: string | null;
 
   @ApiProperty({ example: 1 })
   roleid: number;
@@ -109,4 +111,6 @@ export class UserLoginInformation {
 
   @ApiProperty({ example: new Date().toISOString() })
   updatedat: Date;
+
+  createdSession: string;
 }

@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { MainModule } from './modules/main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import cookieParser from "cookie-parser"
 import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
@@ -9,6 +10,7 @@ import {
 import { ForbiddendFilter } from './filters/filter';
 async function bootstrap() {
   const app = await NestFactory.create(MainModule);
+  app.use(cookieParser())
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder() //Configuring swaggerUI
     .setTitle('Project alphabet')
