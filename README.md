@@ -1,7 +1,7 @@
 # Project Alphabet (Backend)
 
 This project consist in a curriculum generator website.
-
+You can see the documentation of the API endpoints in **/v1/docs**.
 
 
 ## Technologies
