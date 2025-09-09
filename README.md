@@ -1,5 +1,16 @@
-## Alphabet backend API
+# Project Alphabet (Backend)
 
-Soon this readme will be updated.
+This project consist in a curriculum generator website.
+You can see the documentation of the API endpoints in **/v1/docs**.
 
--> Create every controller module and turn appModule into an orchestrator
+
+## Technologies
+Which technologies you can find in this project so far (This section will be updated as the project is developed).
+- [NestJS](https://nestjs.com/)  
+- [postgreSQL](https://www.postgresql.org/)
+- [PrismaORM](https://www.prisma.io/)
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
+
+## Useful links
+- [DML Model](https://www.figma.com/board/fTPONhAwLjGD0mkHJpNBbX/Alphabet-UML?t=m0NeVroqYzOi8Jkf-6) 
+- [Frontend source code](https://github.com/vitxzap/Alphabet-frontend)
