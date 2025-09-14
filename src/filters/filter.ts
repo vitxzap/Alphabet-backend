@@ -2,22 +2,34 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  ForbiddenException,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
-
-@Catch(ForbiddenException)
-export class ForbiddendFilter implements ExceptionFilter { //Handles with Forbidden errors
-  catch(exception: ForbiddenException, host: ArgumentsHost) {
+import { APIError, BetterAuthError } from 'better-auth';
+@Catch(APIError)
+export class APIErrorFilter implements ExceptionFilter {
+  catch(exception: APIError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const status = HttpStatus.FORBIDDEN;
+    const response = ctx.getResponse();
 
-    response.status(status).json({
-      message: exception.message,
-      statusCode: status,
+    response.status(exception.statusCode).json({
+      statusCode: exception.statusCode,
+      message: exception.body?.message,
       timestamp: new Date().toISOString(),
     });
   }
 }
+
+@Catch(Error)
+export class ErrorFilter implements ExceptionFilter {
+  catch(exception: Error, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const status = HttpStatus.INTERNAL_SERVER_ERROR
+    // Your custom error handling logic
+    response.status(status).json({
+      ...exception
+    });
+  }
+}
+
+
