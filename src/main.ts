@@ -7,7 +7,7 @@ import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
-import { APIErrorFilter, ErrorFilter } from './filters/filter';
+import { APIErrorFilter } from './filters/better-auth.filter';
 async function bootstrap() {
   const app = await NestFactory.create(MainModule);
   app.use(cookieParser());
@@ -23,7 +23,6 @@ async function bootstrap() {
   app.enableCors(); //Enable CORS
   app.useGlobalFilters(new PrismaClientExceptionFilter()); //Using filters
   app.useGlobalFilters(new PrismaClientValidationFilter()); //Using filters
-  app.useGlobalFilters(new ErrorFilter());
   app.useGlobalFilters(new APIErrorFilter()); //Using better auth custom filters
   await app.listen(process.env.PORT ?? 3000); //Listening at the port 3000
 }

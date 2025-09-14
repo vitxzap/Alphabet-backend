@@ -19,7 +19,7 @@ export class AuthController {
 
   @Post('/register')
   async register(@Body() user: RegisterDto) {
-    this.authService.api.signUpEmail({
+    await this.authService.api.signUpEmail({
       body: {
         email: user.email,
         password: user.password,

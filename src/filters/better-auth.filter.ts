@@ -4,7 +4,7 @@ import {
   ExceptionFilter,
   HttpStatus,
 } from '@nestjs/common';
-import { APIError, BetterAuthError } from 'better-auth';
+import { APIError } from 'better-auth';
 @Catch(APIError)
 export class APIErrorFilter implements ExceptionFilter {
   catch(exception: APIError, host: ArgumentsHost) {
@@ -19,17 +19,6 @@ export class APIErrorFilter implements ExceptionFilter {
   }
 }
 
-@Catch(Error)
-export class ErrorFilter implements ExceptionFilter {
-  catch(exception: Error, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const status = HttpStatus.INTERNAL_SERVER_ERROR
-    // Your custom error handling logic
-    response.status(status).json({
-      ...exception
-    });
-  }
-}
+
 
 
