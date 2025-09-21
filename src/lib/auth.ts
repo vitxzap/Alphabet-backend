@@ -6,9 +6,18 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-
+  // emailVerification: {
+  //  sendVerificationEmail: async ({user, url, token}, request ) => {
+  //     await
+  //   }
+  //  }
+  session: {
+    expiresIn: 60 * 60 * 24 * 7,
+    cookieCache: {
+      enabled: true,
+    },
+  },
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-
 });

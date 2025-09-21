@@ -3,6 +3,7 @@ import { MainModule } from './main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { apiReference } from '@scalar/nestjs-api-reference';
 import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
@@ -19,12 +20,13 @@ async function bootstrap() {
     .addCookieAuth('user-session')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('v1/docs', app, documentFactory); //Starting the swagger Module at v1/docs
+  SwaggerModule.setup('ref', app, documentFactory); //Starting the swagger Module at v1/docs
+  app.use('/v1/docs', apiReference({ content: documentFactory, theme: "bluePlanet" }));
   app.enableCors(); //Enable CORS
   app.useGlobalFilters(new PrismaClientExceptionFilter()); //Using filters
   app.useGlobalFilters(new PrismaClientValidationFilter()); //Using filters
   app.useGlobalFilters(new APIErrorFilter()); //Using better auth custom filters
-  await app.listen(process.env.PORT ?? 3000); //Listening at the port 3000
+  await app.listen(process.env.PORT ?? 3000); //Listening at the port
 }
 
 bootstrap();
