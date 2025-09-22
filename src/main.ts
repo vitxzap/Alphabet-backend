@@ -2,29 +2,31 @@ import { NestFactory } from '@nestjs/core';
 import { MainModule } from './main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
 import { APIErrorFilter } from './filters/better-auth.filter';
+import { ScalarPreferences } from './common/scalar-preferences';
 async function bootstrap() {
-  const app = await NestFactory.create(MainModule);
-  app.use(cookieParser());
+  const app = await NestFactory.create(MainModule, {
+    bodyParser: false,
+  });
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder() //Configuring swaggerUI
     .setTitle('Project alphabet')
     .setDescription('The alphabet API endpoints description.')
     .setVersion('1.0')
-    .addCookieAuth('user-session')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('ref', app, documentFactory); //Starting the swagger Module at v1/docs
-  app.use('/v1/docs', apiReference({ content: documentFactory, theme: "bluePlanet" }));
+  const documentFactory = SwaggerModule.createDocument(app, config);
+  app.use(
+    '/api/docs',
+    apiReference({ content: documentFactory, theme: 'bluePlanet' }),
+  ); //using scalar to document the api
   app.enableCors(); //Enable CORS
-  app.useGlobalFilters(new PrismaClientExceptionFilter()); //Using filters
-  app.useGlobalFilters(new PrismaClientValidationFilter()); //Using filters
+  app.useGlobalFilters(new PrismaClientExceptionFilter()); //Using prisma custom filters
+  app.useGlobalFilters(new PrismaClientValidationFilter()); //Using prisma custom filters
   app.useGlobalFilters(new APIErrorFilter()); //Using better auth custom filters
   await app.listen(process.env.PORT ?? 3000); //Listening at the port
 }
