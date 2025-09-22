@@ -13,6 +13,7 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
   },
+
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
       await resend.emails.send({
@@ -29,6 +30,7 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
+  trustedOrigins: [process.env.FRONTEND_URL as string],
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),

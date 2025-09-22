@@ -13,6 +13,10 @@ async function bootstrap() {
   const app = await NestFactory.create(MainModule, {
     bodyParser: false,
   });
+  app.enableCors({
+    origin: 'http://localhost:3000', 
+    credentials: true, 
+  }); //Enable CORS
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder() //Configuring swaggerUI
     .setTitle('Project alphabet')
@@ -24,11 +28,10 @@ async function bootstrap() {
     '/api/docs',
     apiReference({ content: documentFactory, theme: 'bluePlanet' }),
   ); //using scalar to document the api
-  app.enableCors(); //Enable CORS
   app.useGlobalFilters(new PrismaClientExceptionFilter()); //Using prisma custom filters
   app.useGlobalFilters(new PrismaClientValidationFilter()); //Using prisma custom filters
   app.useGlobalFilters(new APIErrorFilter()); //Using better auth custom filters
-  await app.listen(process.env.PORT ?? 3000); //Listening at the port
+  await app.listen(process.env.PORT ?? 3050); //Listening the server
 }
 
 bootstrap();
