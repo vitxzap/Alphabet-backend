@@ -1,27 +1,34 @@
 import { NestFactory } from '@nestjs/core';
-import { MainModule } from './modules/main.module';
+import { MainModule } from './main.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { apiReference } from '@scalar/nestjs-api-reference';
 import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
-import { ForbiddendFilter } from './filters/filter';
+import { APIErrorFilter } from './filters/better-auth.filter';
+import { ScalarPreferences } from './common/scalar-preferences';
 async function bootstrap() {
-  const app = await NestFactory.create(MainModule);
+  const app = await NestFactory.create(MainModule, {
+    bodyParser: false,
+  });
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder() //Configuring swaggerUI
     .setTitle('Project alphabet')
     .setDescription('The alphabet API endpoints description.')
     .setVersion('1.0')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('v1/docs', app, documentFactory); //Starting the swagger Module at v1/docs
-  app.enableCors();  //Enable CORS
-  app.useGlobalFilters(new PrismaClientExceptionFilter()); //Using filters
-  app.useGlobalFilters(new PrismaClientValidationFilter()); //Using filters
-  app.useGlobalFilters(new ForbiddendFilter()); //Using filters
-  await app.listen(process.env.PORT ?? 3000); //Listening at the port 3000
+  const documentFactory = SwaggerModule.createDocument(app, config);
+  app.use(
+    '/api/docs',
+    apiReference({ content: documentFactory, theme: 'bluePlanet' }),
+  ); //using scalar to document the api
+  app.enableCors(); //Enable CORS
+  app.useGlobalFilters(new PrismaClientExceptionFilter()); //Using prisma custom filters
+  app.useGlobalFilters(new PrismaClientValidationFilter()); //Using prisma custom filters
+  app.useGlobalFilters(new APIErrorFilter()); //Using better auth custom filters
+  await app.listen(process.env.PORT ?? 3000); //Listening at the port
 }
 
 bootstrap();

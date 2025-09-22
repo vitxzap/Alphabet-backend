@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -8,58 +9,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model tb_permission {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @unique @db.VarChar(48)
-  isvalid            Boolean?             @default(true)
-  tb_role_permission tb_role_permission[]
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
 }
 
-model tb_provider {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.VarChar(32)
-  isactive  Boolean?  @default(true)
-  createdat DateTime  @default(now()) @db.Timestamp(6)
-  updatedat DateTime  @default(now()) @db.Timestamp(6)
-  tb_user   tb_user[]
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
 }
 
-model tb_role {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(16)
-  isvalid            Boolean?             @default(true)
-  tb_role_permission tb_role_permission[]
-  tb_user            tb_user[]
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
 }
 
-model tb_role_permission {
-  id            Int           @id @default(autoincrement())
-  roleid        Int
-  permissionid  Int
-  tb_permission tb_permission @relation(fields: [permissionid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_role       tb_role       @relation(fields: [roleid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
-model tb_user {
-  id              String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name            String            @db.VarChar(20)
-  lastname        String            @db.VarChar(20)
-  email           String            @unique @db.VarChar(150)
-  password        String            @db.VarChar(191)
-  providerid      Int
-  icon            String?
-  roleid          Int               @default(1)
-  createdat       DateTime          @default(now()) @db.Timestamp(6)
-  updatedat       DateTime          @default(now()) @db.Timestamp(6)
-  tb_provider     tb_provider       @relation(fields: [providerid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_role         tb_role           @relation(fields: [roleid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tb_user_session tb_user_session[]
-}
-
-model tb_user_session {
-  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  userid    String   @db.Uuid
-  ipadress  String   @db.VarChar(16)
-  createdat DateTime @default(now()) @db.Timestamp(6)
-  tb_user   tb_user  @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@map("verification")
 }
