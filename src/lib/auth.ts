@@ -4,7 +4,7 @@ import { PrismaClient } from '../../generated/prisma';
 import { Resend } from 'resend';
 import { openAPI } from 'better-auth/plugins';
 import { ScalarPreferences } from 'src/common/scalar-preferences';
-import generateEmailLayout from 'src/common/emailVerificationLayout';
+import generateVerificationEmailLayout from 'src/common/emailVerificationLayout';
 const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
 export const auth = betterAuth({
@@ -12,6 +12,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await resend.emails.send({
+        from: 'Resumit <onboarding@resend.dev>',
+        to: [user.email],
+        subject: 'Reset your password',
+        text: `Reset your password in this link: ${url}`,
+      });
+    },
   },
 
   emailVerification: {
@@ -20,7 +28,7 @@ export const auth = betterAuth({
         from: 'Resumit <onboarding@resend.dev>',
         to: [user.email],
         subject: 'Verify your email address',
-        html: generateEmailLayout(url),
+        html: generateVerificationEmailLayout(url),
       });
     },
   },

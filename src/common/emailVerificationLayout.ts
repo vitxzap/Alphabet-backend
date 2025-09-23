@@ -1,4 +1,4 @@
-export default function generateEmailLayout(
+export default function generateVerificationEmailLayout(
   url: string,
   user?: string,
   callback?: string,
