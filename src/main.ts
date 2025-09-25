@@ -14,7 +14,7 @@ async function bootstrap() {
     bodyParser: false,
   });
   app.enableCors({
-    origin: 'http://localhost:3000', 
+    origin: process.env.UI_URL, 
     credentials: true, 
   }); //Enable CORS
   app.useGlobalPipes(new ValidationPipe());
