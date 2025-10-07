@@ -14,25 +14,25 @@ export const auth = betterAuth({
   plugins: [
     openAPI(ScalarPreferences),
     emailOTP({
+      overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
-        const mailSender = resend.emails.send;
         switch (type) {
           case 'sign-in':
-            await mailSender({
+            await resend.emails.send({
               from: 'Resumit <onboarding@resend.dev>',
               to: [email],
               subject: 'Sign in into your account',
               html: generateOTPCodeLayout(otp),
             });
           case 'forget-password':
-            await mailSender({
+            await resend.emails.send({
               from: 'Resumit <onboarding@resend.dev>',
               to: [email],
               subject: 'Reset your password',
               html: generateOTPCodeLayout(otp),
             });
           case 'email-verification':
-            await mailSender({
+            await resend.emails.send({
               from: 'Resumit <onboarding@resend.dev>',
               to: [email],
               subject: 'Verify your Resum.it account',
@@ -52,6 +52,7 @@ export const auth = betterAuth({
       },
     },
   },
+
   trustedOrigins: [process.env.UI_URL as string],
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
