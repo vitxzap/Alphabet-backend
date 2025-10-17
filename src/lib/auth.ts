@@ -21,6 +21,7 @@ export const auth = betterAuth({
               subject: 'Sign in into your account',
               html: generateOTPCodeLayout(otp),
             });
+            break;
           case 'forget-password':
             await resend.emails.send({
               from: 'Edunis <onboarding@resend.dev>',
@@ -28,13 +29,15 @@ export const auth = betterAuth({
               subject: 'Reset your password',
               html: generateOTPCodeLayout(otp),
             });
+            break;
           case 'email-verification':
             await resend.emails.send({
               from: 'Edunis <onboarding@resend.dev>',
               to: [email],
-              subject: 'Verify your Resum.it account',
+              subject: 'Verify your Edunis account',
               html: generateOTPCodeLayout(otp),
             });
+            break;
         }
       },
     }),
