@@ -8,14 +8,19 @@ import {
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
 import { APIErrorFilter } from './filters/better-auth.filter';
-import { ScalarPreferences } from './common/scalar-preferences';
+/* import * as fs from 'fs'; */
 async function bootstrap() {
+ /*  const httpsOptions = {
+    key: fs.readFileSync('src/secrets/localhost+2-key.pem'),
+    cert: fs.readFileSync('src/secrets/localhost+2.pem'),
+  }; */
   const app = await NestFactory.create(MainModule, {
     bodyParser: false,
+    /* httpsOptions */
   });
   app.enableCors({
-    origin: process.env.UI_URL, 
-    credentials: true, 
+    origin: process.env.UI_URL as string,
+    credentials: true,
   }); //Enable CORS
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder() //Configuring swaggerUI

@@ -201,7 +201,7 @@ export function generateVerificationEmailLayout(
   return layout;
 }
 
-export function generateOTPCodeLayout(otp: string,) {
+export function generateOTPCodeLayout(otp: string) {
   const layout = `
     <html lang="en" dir="ltr">
   <head>
