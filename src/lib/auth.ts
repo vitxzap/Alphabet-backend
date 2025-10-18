@@ -5,13 +5,23 @@ import { Resend } from 'resend';
 import { emailOTP, openAPI } from 'better-auth/plugins';
 import { ScalarPreferences } from 'src/common/scalar-preferences';
 import { generateOTPCodeLayout } from 'src/common/emailVerificationLayout';
+import { createClient, RedisClientType } from 'redis';
 const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+let redis: RedisClientType;
+const initializeRedis = async () => {
+  if (!redis) {
+    redis = createClient();
+    await redis.connect();
+  }
+  return redis;
+};
+
 export const auth = betterAuth({
   //Plugins settings
   plugins: [
     openAPI(ScalarPreferences),
-
     //Sending Emails settings
     emailOTP({
       overrideDefaultEmailVerification: true,
@@ -46,13 +56,31 @@ export const auth = betterAuth({
     }),
   ],
 
+  secondaryStorage: {
+    get: async (key: string) => {
+      const redisClient = await initializeRedis();
+      return await redisClient.get(key);
+    },
+    set: async (key: string, value: string, ttl: number) => {
+      const redisClient = await initializeRedis();
+      if (ttl) {
+        await redisClient.set(key, value, { EX: ttl });
+      }
+      await redisClient.set(key, value);
+    },
+    delete: async (key: string) => {
+      const redisClient = await initializeRedis();
+      await redisClient.del(key);
+    },
+  },
+
   //Social Providers settings
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
-      prompt: "select_account",
+      prompt: 'select_account',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      display: 'popup'
+      display: 'popup',
     },
   },
 
