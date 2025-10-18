@@ -230,7 +230,7 @@ export function generateOTPCodeLayout(otp: string) {
                     ${otp}
                   </p>
                 </div>
-                <p style="font-size:14px; color:#6b7280; margin:0;">This code will expire in 10 minutes</p>
+                <p style="font-size:14px; color:#6b7280; margin:0;">This code will expire in 5 minutes</p>
               </td>
             </tr>
 
