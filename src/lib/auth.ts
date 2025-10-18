@@ -8,8 +8,11 @@ import { generateOTPCodeLayout } from 'src/common/emailVerificationLayout';
 const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
 export const auth = betterAuth({
+  //Plugins settings
   plugins: [
     openAPI(ScalarPreferences),
+
+    //Sending Emails settings
     emailOTP({
       overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
@@ -42,21 +45,33 @@ export const auth = betterAuth({
       },
     }),
   ],
+
+  //Social Providers settings
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
+
+  //Email and password settings
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
     secret: process.env.BETTER_AUTH_SECRET,
 
+    //Session tokens settings
     session: {
       cookieCache: {
         enabled: true,
       },
     },
   },
-  advanced: {
-    useSecureCookies: false,
-  },
+
+  //CORS settings
   trustedOrigins: [process.env.UI_URL as string],
+
+  //Database settings
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
