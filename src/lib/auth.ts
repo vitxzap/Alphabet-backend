@@ -56,6 +56,7 @@ export const auth = betterAuth({
     }),
   ],
 
+  //Redis cache settings
   secondaryStorage: {
     get: async (key: string) => {
       const redisClient = await initializeRedis();
@@ -84,6 +85,10 @@ export const auth = betterAuth({
       prompt: 'select_account',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       display: 'popup',
+    },
+    microsoft: {
+      clientId: process.env.MICROSOFT_CLIENT_ID as string,
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET as string,
     },
   },
 
