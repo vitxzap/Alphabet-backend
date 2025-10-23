@@ -1,4 +1,4 @@
-import { OpenAPIOptions } from "better-auth/plugins";
+import { OpenAPIOptions } from 'better-auth/plugins';
 
 export const ScalarPreferences: OpenAPIOptions = {
   theme: 'bluePlanet',
