@@ -1,24 +1,14 @@
-import { betterAuth } from 'better-auth';
+import { betterAuth, BetterAuthOptions } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '../../generated/prisma';
 import { Resend } from 'resend';
 import { emailOTP, openAPI } from 'better-auth/plugins';
 import { ScalarPreferences } from 'src/common/scalar-preferences';
 import { generateOTPCodeLayout } from 'src/common/emailVerificationLayout';
-import { createClient, RedisClientType } from 'redis';
 const prisma = new PrismaClient();
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-let redis: RedisClientType;
-const initializeRedis = async () => {
-  if (!redis) {
-    redis = createClient();
-    await redis.connect();
-  }
-  return redis;
-};
-
-export const auth = betterAuth({
+export const auth: BetterAuthOptions = {
   //Plugins settings
   plugins: [
     openAPI(ScalarPreferences),
@@ -56,25 +46,6 @@ export const auth = betterAuth({
     }),
   ],
 
-  //Redis cache settings
-  secondaryStorage: {
-    get: async (key: string) => {
-      const redisClient = await initializeRedis();
-      return await redisClient.get(key);
-    },
-    set: async (key: string, value: string, ttl: number) => {
-      const redisClient = await initializeRedis();
-      if (ttl) {
-        await redisClient.set(key, value, { EX: ttl });
-      }
-      await redisClient.set(key, value);
-    },
-    delete: async (key: string) => {
-      const redisClient = await initializeRedis();
-      await redisClient.del(key);
-    },
-  },
-
   //Social Providers settings
   socialProviders: {
     google: {
@@ -93,16 +64,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    secret: process.env.BETTER_AUTH_SECRET,
-
-    //Session tokens settings
-    session: {
-      cookieCache: {
-        enabled: true,
-      },
+  },
+  session: {
+    cookieCache: {
+      enabled: true,
     },
   },
 
+  secret: process.env.BETTER_AUTH_SECRET,
   //CORS settings
   trustedOrigins: [process.env.UI_URL as string],
 
@@ -110,4 +79,4 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-});
+};
