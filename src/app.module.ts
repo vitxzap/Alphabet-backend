@@ -28,14 +28,12 @@ import { RedisModule } from './database/redis/redis.module';
       inject: [RedisService],
       useFactory: async (redisService: RedisService) => {
         const redis = redisService.getRedisClient();
-
         return {
           auth: betterAuth({
             ...auth,
             secondaryStorage: {
               get: async (key: string) => {
                 return await redis.get(key);
-                console.log(key);
               },
               set: async (key: string, value: string, ttl: number) => {
                 if (ttl) {

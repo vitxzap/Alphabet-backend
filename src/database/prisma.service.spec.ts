@@ -34,7 +34,6 @@ describe('PrismaService', () => {
         image: fakeUser.image,
       },
     });
-    console.log(result);
     expect(result).not.toBeNull();
   });
   it('Should delete the fake user', async () => {

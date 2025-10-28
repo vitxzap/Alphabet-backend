@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import {
   PrismaClientExceptionFilter,
@@ -14,9 +14,10 @@ async function bootstrap() {
     key: fs.readFileSync('src/secrets/localhost+2-key.pem'),
     cert: fs.readFileSync('src/secrets/localhost+2.pem'),
   }; */
+  const logger = new Logger("Application");
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
-    logger: ['error', 'log', 'warn'],
+    logger: ['error', 'log', 'warn', 'debug'],
     /* httpsOptions */
   });
   //Enable CORS
@@ -45,7 +46,7 @@ async function bootstrap() {
   app.useGlobalFilters(new APIErrorFilter());
   //Listening the server
   await app.listen(process.env.PORT ?? 3050);
-  console.warn(`Application is running on port: ${process.env.PORT}`);
+  logger.debug(`Running on port: ${process.env.PORT}`);
 }
 
 bootstrap();
