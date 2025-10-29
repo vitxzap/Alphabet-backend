@@ -5,6 +5,8 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { APIError } from 'better-auth';
+
+//Handles with BetterAuth API Errors
 @Catch(APIError)
 export class APIErrorFilter implements ExceptionFilter {
   catch(exception: APIError, host: ArgumentsHost) {

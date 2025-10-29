@@ -16,12 +16,14 @@ import { ResendModule } from './resend/resend.module';
 import { admin, emailOTP, openAPI } from 'better-auth/plugins';
 import { ScalarPreferences } from './common/scalar-preferences';
 @Module({
-  //Imports every module and compile them
   imports: [
+    //ConfigModule settings
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
+
+    // BetterAuth Module setttings
     AuthModule.forRootAsync({
       imports: [RedisModule, ResendModule, PrismaModule],
       inject: [RedisService, ResendService, ConfigService, PrismaService],
@@ -29,14 +31,17 @@ import { ScalarPreferences } from './common/scalar-preferences';
         redisService: RedisService,
         resendService: ResendService,
         configService: ConfigService,
-        prismaService: PrismaService
+        prismaService: PrismaService,
       ) => {
+        //Get the redis client to make possible better-auth execute commands on it
         const redis = redisService.getRedisClient();
         return {
           auth: betterAuth({
             //Plugins settings
             plugins: [
+              //Generates openAPI documentation at /api/auth/reference
               openAPI(ScalarPreferences),
+              //Using RBAC plugin
               admin(),
               //Sending Emails settings
               emailOTP({
@@ -56,7 +61,6 @@ import { ScalarPreferences } from './common/scalar-preferences';
                 },
               }),
             ],
-
             //Social Providers settings
             socialProviders: {
               google: {
@@ -67,23 +71,23 @@ import { ScalarPreferences } from './common/scalar-preferences';
               },
               microsoft: {
                 clientId: configService.getOrThrow('MICROSOFT_CLIENT_ID'),
-
                 clientSecret: configService.getOrThrow(
                   'MICROSOFT_CLIENT_SECRET',
                 ),
               },
             },
-
             //Email and password settings
             emailAndPassword: {
               enabled: true,
               requireEmailVerification: true,
             },
+            //Sessions cookies settings
             session: {
               cookieCache: {
                 enabled: true,
               },
             },
+            //Redis as a second database settings
             secondaryStorage: {
               get: async (key: string) => {
                 return await redis.get(key);
@@ -101,11 +105,11 @@ import { ScalarPreferences } from './common/scalar-preferences';
                 await redis.del(key);
               },
             },
+            //Better-auth secret
             secret: configService.getOrThrow('BETTER_AUTH_SECRET'),
             //CORS settings
             trustedOrigins: [configService.getOrThrow('UI_URL')],
-
-            //Database settings
+            //Database settiungs
             database: prismaAdapter(prismaService, {
               provider: 'postgresql',
             }),
@@ -113,6 +117,7 @@ import { ScalarPreferences } from './common/scalar-preferences';
         };
       },
     }),
+    //Arcjet Module settings
     ArcjetModule.forRootAsync({
       isGlobal: true,
       imports: [],
@@ -130,6 +135,7 @@ import { ScalarPreferences } from './common/scalar-preferences';
   ],
   controllers: [],
   providers: [
+    //Arcjet Global Guard
     {
       provide: APP_GUARD,
       useClass: ArcjetGuard,

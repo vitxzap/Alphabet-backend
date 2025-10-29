@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { Response } from 'express';
-@Catch(Prisma.PrismaClientKnownRequestError) //Handles with Prisma known errors
+//Handles with Prisma known errors
+@Catch(Prisma.PrismaClientKnownRequestError) 
 export class PrismaClientExceptionFilter implements ExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -21,7 +22,8 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
   }
 }
 
-@Catch(Prisma.PrismaClientValidationError) //Handles with Prisma validation errors
+//Handles with Prisma validation errors
+@Catch(Prisma.PrismaClientValidationError) 
 export class PrismaClientValidationFilter implements ExceptionFilter {
   catch(exception: Prisma.PrismaClientValidationError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
