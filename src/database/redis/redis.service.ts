@@ -1,14 +1,15 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
 
 @Injectable()
 export class RedisService {
   private static client: RedisClientType | null = null;
   private readonly logger = new Logger(RedisService.name);
-  constructor() {
+  constructor(private configService: ConfigService) {
     if (!RedisService.client) {
       RedisService.client = createClient({
-        url: process.env.REDIS_URL || 'redis://localhost:6379',
+        url: configService.get("REDIS_URL") || 'redis://localhost:6379',
       });
 
       RedisService.client.on('error', (err) => this.logger.fatal(err));

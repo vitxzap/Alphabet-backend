@@ -1,21 +1,20 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
-import { auth } from './lib/auth';
 import { APP_GUARD } from '@nestjs/core';
 import { PrismaService } from './database/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import {
-  ArcjetGuard,
-  ArcjetModule,
-  fixedWindow,
-  shield,
-  detectBot,
-} from '@arcjet/nest';
+import { ArcjetGuard, ArcjetModule, fixedWindow, shield } from '@arcjet/nest';
 import { UserModule } from './user/user.module';
 import { ArcjetLogger } from './arcjet/arcjet.logger';
 import { RedisService } from './database/redis/redis.service';
 import { betterAuth } from 'better-auth';
 import { RedisModule } from './database/redis/redis.module';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { PrismaModule } from './database/prisma.module';
+import { ResendService } from './resend/resend.service';
+import { ResendModule } from './resend/resend.module';
+import { admin, emailOTP, openAPI } from 'better-auth/plugins';
+import { ScalarPreferences } from './common/scalar-preferences';
 @Module({
   //Imports every module and compile them
   imports: [
@@ -24,13 +23,67 @@ import { RedisModule } from './database/redis/redis.module';
       envFilePath: '.env',
     }),
     AuthModule.forRootAsync({
-      imports: [RedisModule],
-      inject: [RedisService],
-      useFactory: async (redisService: RedisService) => {
+      imports: [RedisModule, ResendModule, PrismaModule],
+      inject: [RedisService, ResendService, ConfigService, PrismaService],
+      useFactory: async (
+        redisService: RedisService,
+        resendService: ResendService,
+        configService: ConfigService,
+        prismaService: PrismaService
+      ) => {
         const redis = redisService.getRedisClient();
         return {
           auth: betterAuth({
-            ...auth,
+            //Plugins settings
+            plugins: [
+              openAPI(ScalarPreferences),
+              admin(),
+              //Sending Emails settings
+              emailOTP({
+                overrideDefaultEmailVerification: true,
+                async sendVerificationOTP({ email, otp, type }) {
+                  switch (type) {
+                    case 'sign-in':
+                      await resendService.signIn(email, otp);
+                      break;
+                    case 'forget-password':
+                      await resendService.resetPassword(email, otp);
+                      break;
+                    case 'email-verification':
+                      await resendService.verificateEmail(email, otp);
+                      break;
+                  }
+                },
+              }),
+            ],
+
+            //Social Providers settings
+            socialProviders: {
+              google: {
+                clientId: configService.getOrThrow('GOOGLE_CLIENT_ID'),
+                prompt: 'select_account',
+                clientSecret: configService.getOrThrow('GOOGLE_CLIENT_SECRET'),
+                display: 'popup',
+              },
+              microsoft: {
+                clientId: configService.getOrThrow('MICROSOFT_CLIENT_ID'),
+
+                clientSecret: configService.getOrThrow(
+                  'MICROSOFT_CLIENT_SECRET',
+                ),
+              },
+            },
+
+            //Email and password settings
+            emailAndPassword: {
+              enabled: true,
+              requireEmailVerification: true,
+            },
+            session: {
+              cookieCache: {
+                enabled: true,
+              },
+            },
             secondaryStorage: {
               get: async (key: string) => {
                 return await redis.get(key);
@@ -40,20 +93,29 @@ import { RedisModule } from './database/redis/redis.module';
                   await redis.set(key, value, {
                     EX: ttl,
                   });
+                } else {
+                  await redis.set(key, value);
                 }
-                await redis.set(key, value);
               },
               delete: async (key: string) => {
                 await redis.del(key);
               },
             },
+            secret: configService.getOrThrow('BETTER_AUTH_SECRET'),
+            //CORS settings
+            trustedOrigins: [configService.getOrThrow('UI_URL')],
+
+            //Database settings
+            database: prismaAdapter(prismaService, {
+              provider: 'postgresql',
+            }),
           }),
         };
       },
     }),
     ArcjetModule.forRootAsync({
       isGlobal: true,
-      imports: [ConfigModule],
+      imports: [],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         key: configService.get('ARCJET_KEY') as string,
@@ -68,7 +130,6 @@ import { RedisModule } from './database/redis/redis.module';
   ],
   controllers: [],
   providers: [
-    PrismaService,
     {
       provide: APP_GUARD,
       useClass: ArcjetGuard,
