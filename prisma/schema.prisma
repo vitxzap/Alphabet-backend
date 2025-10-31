@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,27 +11,25 @@ datasource db {
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
+  banExpires    DateTime?
+  banReason     String?
+  banned        Boolean?  @default(false)
+  role          String?
   accounts      Account[]
+  sessions      Session[]
 
-  role       String?
-  banned     Boolean?  @default(false)
-  banReason  String?
-  banExpires DateTime?
-
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -40,16 +37,14 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String          @id
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -57,8 +52,10 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class_subject         class_subject[]
 
   @@map("account")
 }
@@ -72,4 +69,52 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+model shift {
+  id         Int      @id @default(autoincrement())
+  shift      String   @db.VarChar(12)
+  starttime  DateTime @db.Time(6)
+  finishtime DateTime @db.Time(6)
+  course     course[]
+}
+
+model class_subject {
+  id        Int      @id @default(autoincrement())
+  courseid  String?  @db.Uuid
+  subjectid String?  @db.Uuid
+  userid    String?
+  course    course?  @relation(fields: [courseid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subject   subject? @relation(fields: [subjectid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  account   Account? @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model course {
+  id            String          @id(map: "class_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name          String
+  code          String          @unique(map: "class_code_key") @db.VarChar(6)
+  shiftid       Int
+  identifier    String          @db.Char(1)
+  startat       DateTime        @db.Date
+  finishat      DateTime        @db.Date
+  createdat     DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Date
+  updatedat     DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Date
+  isactive      Boolean         @default(true)
+  class_subject class_subject[]
+  shift         shift           @relation(fields: [shiftid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "class_shift_fkey")
+}
+
+model subject {
+  id            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name          String          @db.VarChar(64)
+  type          Int?
+  createdat     DateTime?       @default(dbgenerated("CURRENT_DATE")) @db.Date
+  isactive      Boolean?        @default(true)
+  class_subject class_subject[]
+}
+
+model subject_type {
+  id       Int      @id @default(autoincrement())
+  type     String
+  isactive Boolean? @default(true)
 }
