@@ -23,6 +23,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
+  courseId String? @db.Uuid
+  course   course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
   @@map("user")
 }
 
@@ -102,6 +105,7 @@ model course {
   isactive      Boolean         @default(true)
   class_subject class_subject[]
   shift         shift           @relation(fields: [shiftid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "class_shift_fkey")
+  User          User[]
 }
 
 model subject {

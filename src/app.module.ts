@@ -109,7 +109,20 @@ import { ScalarPreferences } from './common/scalar-preferences';
             secret: configService.getOrThrow('BETTER_AUTH_SECRET'),
             //CORS settings
             trustedOrigins: [configService.getOrThrow('UI_URL')],
-            //Database settiungs
+            //Database settings
+            user: {
+              additionalFields: {
+                course: {
+                  type: 'string',
+                  input: false,
+                  fieldName: 'courseId',
+                  references: {
+                    model: 'course',
+                    field: 'id',
+                  },
+                }
+              }
+            },
             database: prismaAdapter(prismaService, {
               provider: 'postgresql',
             }),
