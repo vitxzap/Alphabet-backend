@@ -9,22 +9,22 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String     @id
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String     @unique
+  emailVerified Boolean    @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
   banExpires    DateTime?
   banReason     String?
-  banned        Boolean?  @default(false)
+  banned        Boolean?   @default(false)
   role          String?
+  courseId      String?    @db.Uuid
   accounts      Account[]
+  semester      semester[]
   sessions      Session[]
-
-  courseId String? @db.Uuid
-  course   course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course        course?    @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@map("user")
 }
@@ -44,7 +44,7 @@ model Session {
 }
 
 model Account {
-  id                    String          @id
+  id                    String    @id
   accountId             String
   providerId            String
   userId                String
@@ -55,10 +55,9 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
-  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  class_subject         class_subject[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }
@@ -82,43 +81,44 @@ model shift {
   course     course[]
 }
 
-model class_subject {
-  id        Int      @id @default(autoincrement())
-  courseid  String?  @db.Uuid
-  subjectid String?  @db.Uuid
-  userid    String?
-  course    course?  @relation(fields: [courseid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subject   subject? @relation(fields: [subjectid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  account   Account? @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
 model course {
-  id            String          @id(map: "class_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name          String
-  code          String          @unique(map: "class_code_key") @db.VarChar(6)
-  shiftid       Int
-  identifier    String          @db.Char(1)
-  startat       DateTime        @db.Date
-  finishat      DateTime        @db.Date
-  createdat     DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Date
-  updatedat     DateTime        @default(dbgenerated("CURRENT_DATE")) @db.Date
-  isactive      Boolean         @default(true)
-  class_subject class_subject[]
-  shift         shift           @relation(fields: [shiftid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "class_shift_fkey")
-  User          User[]
+  id         String     @id(map: "class_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name       String
+  code       String     @unique(map: "class_code_key") @db.VarChar(6)
+  shiftid    Int
+  identifier String     @db.Char(1)
+  startat    DateTime   @db.Date
+  finishat   DateTime   @db.Date
+  createdat  DateTime   @default(dbgenerated("CURRENT_DATE")) @db.Date
+  updatedat  DateTime   @default(dbgenerated("CURRENT_DATE")) @db.Date
+  isactive   Boolean    @default(true)
+  shift      shift      @relation(fields: [shiftid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "class_shift_fkey")
+  semester   semester[]
+  User       User[]
 }
 
 model subject {
-  id            String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name          String          @db.VarChar(64)
-  type          Int?
-  createdat     DateTime?       @default(dbgenerated("CURRENT_DATE")) @db.Date
-  isactive      Boolean?        @default(true)
-  class_subject class_subject[]
+  id        String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String     @db.VarChar(64)
+  type      Int?
+  createdat DateTime?  @default(dbgenerated("CURRENT_DATE")) @db.Date
+  isactive  Boolean?   @default(true)
+  semester  semester[]
 }
 
 model subject_type {
   id       Int      @id @default(autoincrement())
   type     String
   isactive Boolean? @default(true)
+}
+
+model semester {
+  id        Int      @id(map: "class_subject_pkey") @default(autoincrement())
+  courseid  String?  @db.Uuid
+  subjectid String?  @db.Uuid
+  semester  Int
+  teacherid String?
+  course    course?  @relation(fields: [courseid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "class_subject_courseid_fkey")
+  subject   subject? @relation(fields: [subjectid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "class_subject_subjectid_fkey")
+  user      User?    @relation(fields: [teacherid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_teacherid")
 }
