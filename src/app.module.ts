@@ -4,7 +4,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { PrismaService } from './database/prisma.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ArcjetGuard, ArcjetModule, fixedWindow, shield } from '@arcjet/nest';
-import { UserModule } from './user/user.module';
 import { ArcjetLogger } from './arcjet/arcjet.logger';
 import { RedisService } from './database/redis/redis.service';
 import { betterAuth } from 'better-auth';
@@ -15,18 +14,23 @@ import { ResendService } from './resend/resend.service';
 import { ResendModule } from './resend/resend.module';
 import { admin, emailOTP, openAPI } from 'better-auth/plugins';
 import { ScalarPreferences } from './common/scalar-preferences';
+import { TeacherModule } from './teacher/teacher.module';
+import { TeacherService } from './teacher/teacher.service';
+import { UserModule } from './user/user.module';
 @Module({
   imports: [
+    TeacherModule,
+    UserModule,
+    PrismaModule,
     //ConfigModule settings
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-
     // BetterAuth Module setttings
     AuthModule.forRootAsync({
-      imports: [RedisModule, ResendModule, PrismaModule],
-      inject: [RedisService, ResendService, ConfigService, PrismaService],
+      imports: [RedisModule, ResendModule],
+      inject: [RedisService, ResendService, ConfigService],
       useFactory: async (
         redisService: RedisService,
         resendService: ResendService,
@@ -42,7 +46,9 @@ import { ScalarPreferences } from './common/scalar-preferences';
               //Generates openAPI documentation at /api/auth/reference
               openAPI(ScalarPreferences),
               //Using RBAC plugin
-              admin(),
+              admin({
+                adminUserIds: ['PVMsxGQuMmdhC0MDOfsXvKtHoA7xQKBX'],
+              }),
               //Sending Emails settings
               emailOTP({
                 overrideDefaultEmailVerification: true,
@@ -120,8 +126,8 @@ import { ScalarPreferences } from './common/scalar-preferences';
                     model: 'course',
                     field: 'id',
                   },
-                }
-              }
+                },
+              },
             },
             database: prismaAdapter(prismaService, {
               provider: 'postgresql',
@@ -138,13 +144,12 @@ import { ScalarPreferences } from './common/scalar-preferences';
       useFactory: async (configService: ConfigService) => ({
         key: configService.get('ARCJET_KEY') as string,
         rules: [
-          shield({ mode: 'DRY_RUN' }),
-          fixedWindow({ max: 2, mode: 'DRY_RUN', window: '60s' }),
+          shield({ mode: 'LIVE' }),
+          fixedWindow({ max: 5, mode: 'LIVE', window: '60s' }),
         ],
         log: new ArcjetLogger(),
       }),
     }),
-    UserModule,
   ],
   controllers: [],
   providers: [
