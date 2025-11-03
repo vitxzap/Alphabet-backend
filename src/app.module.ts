@@ -30,7 +30,7 @@ import { UserModule } from './user/user.module';
     // BetterAuth Module setttings
     AuthModule.forRootAsync({
       imports: [RedisModule, ResendModule],
-      inject: [RedisService, ResendService, ConfigService],
+      inject: [RedisService, ResendService, ConfigService, PrismaService],
       useFactory: async (
         redisService: RedisService,
         resendService: ResendService,
@@ -46,9 +46,7 @@ import { UserModule } from './user/user.module';
               //Generates openAPI documentation at /api/auth/reference
               openAPI(ScalarPreferences),
               //Using RBAC plugin
-              admin({
-                adminUserIds: ['PVMsxGQuMmdhC0MDOfsXvKtHoA7xQKBX'],
-              }),
+              admin(),
               //Sending Emails settings
               emailOTP({
                 overrideDefaultEmailVerification: true,
@@ -144,8 +142,8 @@ import { UserModule } from './user/user.module';
       useFactory: async (configService: ConfigService) => ({
         key: configService.get('ARCJET_KEY') as string,
         rules: [
-          shield({ mode: 'LIVE' }),
-          fixedWindow({ max: 5, mode: 'LIVE', window: '60s' }),
+          shield({ mode: 'DRY_RUN' }),
+          fixedWindow({ max: 5, mode: 'DRY_RUN', window: '60s' }),
         ],
         log: new ArcjetLogger(),
       }),
