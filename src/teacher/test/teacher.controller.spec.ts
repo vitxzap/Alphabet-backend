@@ -3,14 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeacherController } from '../teacher.controller';
 
 describe('TeacherController', () => {
-  let teacherService: TeacherService;
+  let teacherService: Partial<TeacherService>;
   let teacherController: TeacherController;
   beforeEach(async () => {
     teacherService = {
       findSemesterByid: jest.fn((id: string) => {
-        return id;
+        return new Promise((resolve, reject) => {
+          resolve(id as any);
+        });
       }),
-    } as any;
+    };
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [TeacherController],
       providers: [
