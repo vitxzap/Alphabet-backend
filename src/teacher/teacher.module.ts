@@ -3,7 +3,7 @@ import { TeacherController } from './teacher.controller';
 import { TeacherContractRepository } from './teacher.contract';
 import { TeacherRepository } from './teacher.repository';
 import { TeacherService } from './teacher.service';
-import { PrismaService } from 'src/database/prisma.service';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 
 @Module({
   controllers: [TeacherController],

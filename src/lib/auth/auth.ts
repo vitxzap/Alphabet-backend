@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { admin as adminPlugin, emailOTP, openAPI } from 'better-auth/plugins';
-import { ScalarPreferences } from 'src/common/scalar-preferences';
+import { ScalarPreferences } from 'src/lib/auth/common/scalar-preferences';
 import { teacher, coordinator, ac } from './permissions';
 import { userAc, adminAc } from 'better-auth/plugins/admin/access';
 
