@@ -4,9 +4,13 @@ import { TeacherContractRepository } from './teacher.contract';
 
 @Injectable()
 export class TeacherRepository implements TeacherContractRepository {
-  constructor(private prisma: PrismaService) {}
-  async findCourse(): Promise<object> {
-    const payload = await this.prisma.course.findMany();
-    return payload;
+  constructor(private prismaService: PrismaService) {}
+  async findSemesterById(teacherId: string): Promise<object> {
+    const data = await this.prismaService.semester.findMany({
+      where: {
+        teacherid: teacherId,
+      },
+    });
+    return data;
   }
 }

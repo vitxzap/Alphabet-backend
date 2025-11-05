@@ -45,6 +45,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.38.0",
+    "@jest/globals": "^30.2.0",
     "@nestjs/cli": "^11.0.10",
     "@nestjs/schematics": "^11.0.9",
     "@nestjs/testing": "^11.1.8",
@@ -81,6 +82,9 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "transformIgnorePatterns": [
+      "\"node_modules/(?!@thallesp/nestjs-better-auth)/\""
+    ],
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],

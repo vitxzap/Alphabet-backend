@@ -1,3 +1,3 @@
 export abstract class TeacherContractRepository {
-    abstract findCourse(): Promise<object>
+  abstract findSemesterById(teacherId: string): Promise<object>;
 }

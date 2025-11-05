@@ -1,20 +1,17 @@
 import { Controller, Get, Logger } from '@nestjs/common';
 import { TeacherService } from './teacher.service';
-import { AllowAnonymous, Roles, Session } from '@thallesp/nestjs-better-auth';
-
-@Controller('/role')
+import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
+@Controller('/teacher')
 export class TeacherController {
-  constructor(private service: TeacherService) {}
-  private readonly logger = new Logger(TeacherController.name);
-  @Roles(['admin'])
-  @Get('/admin')
-  async admin() {
-    return "You're an admin!";
-  }
+  constructor(
+    private teacherService: TeacherService,
+    //private authService: AuthService<typeof AuthInstance>,
+  ) {}
 
-  @Roles(['user'])
-  @Get('/user')
-  async user() {
-    return "You're an user!";
+  @Get('/semester')
+  async getSemester(@Session() session: UserSession) {
+    const teacherId = session.user.id;
+    const data = await this.teacherService.findSemesterByid(teacherId);
+    return data;
   }
 }
