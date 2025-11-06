@@ -2,14 +2,12 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { betterAuth } from 'better-auth';
 import { openAPI, admin as adminPlugin, emailOTP } from 'better-auth/plugins';
-import { ScalarPreferences } from 'src/lib/auth/common/scalar-preferences';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { RedisService } from 'src/database/redis/redis.service';
 import { ResendService } from 'src/resend/resend.service';
-import { coordinator, teacher, ac } from './permissions';
-import { userAc, adminAc } from 'better-auth/plugins/admin/access';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { AUTH_INSTANCE } from './symbols';
+import { accessControl, teacher, user, admin } from './permissions';
 
 @Module({})
 export class AuthConstantModule {
@@ -35,16 +33,16 @@ export class AuthConstantModule {
               //Plugins settings
               plugins: [
                 //Generates openAPI documentation at /api/auth/reference
-                openAPI(ScalarPreferences),
+                openAPI({ disableDefaultReference: true }),
                 //Using RBAC plugin
                 adminPlugin({
-                  ac,
+                  ac: accessControl,
                   roles: {
-                    coordinator,
+                    user,
                     teacher,
-                    adminAc,
-                    userAc,
+                    admin,
                   },
+                  adminRoles: ['admin'],
                 }),
                 //Sending Emails settings
                 emailOTP({
@@ -128,6 +126,7 @@ export class AuthConstantModule {
                   },
                 },
               },
+
               database: prismaAdapter(prismaService, {
                 provider: 'postgresql',
               }),

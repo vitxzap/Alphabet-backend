@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TeacherController } from './teacher.controller';
-import { TeacherContractRepository } from './teacher.contract';
+import { TeacherContract } from './teacher.contract';
 import { TeacherRepository } from './teacher.repository';
 import { TeacherService } from './teacher.service';
 import { PrismaService } from 'src/database/prisma/prisma.service';
@@ -10,7 +10,7 @@ import { PrismaService } from 'src/database/prisma/prisma.service';
   providers: [
     TeacherService,
     {
-      provide: TeacherContractRepository,
+      provide: TeacherContract,
       useClass: TeacherRepository,
     },
   ],

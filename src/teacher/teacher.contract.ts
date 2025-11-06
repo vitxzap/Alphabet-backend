@@ -1,3 +1,3 @@
-export abstract class TeacherContractRepository {
-  abstract findSemesterById(teacherId: string): Promise<object>;
+export abstract class TeacherContract {
+  abstract findTeacherById(teacherId: string): Promise<object>;
 }

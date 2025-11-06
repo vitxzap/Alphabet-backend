@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { TeacherContractRepository } from './teacher.contract';
+import { TeacherContract } from './teacher.contract';
 
 @Injectable()
 export class TeacherService {
-  constructor(private repository: TeacherContractRepository) {}
-  // Finds all semester by teachers id
-  async findSemesterByid(teacherId: string) {
-    const data = await this.repository.findSemesterById(teacherId);
+  constructor(private contract: TeacherContract) {}
+
+  async findTeacherByid(teacherId: string) {
+    const data = await this.contract.findTeacherById(teacherId);
     return data;
   }
 }

@@ -1,21 +1,27 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
+import { MyLoggerService } from 'src/logger/logger.service';
+import { ContextualLogger } from 'src/logger/types';
 
 @Injectable()
 export class RedisService {
   private static client: RedisClientType | null = null;
-  private readonly logger = new Logger(RedisService.name);
-  constructor(private configService: ConfigService) {
+  private readonly logger: ContextualLogger;
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly loggerService: MyLoggerService,
+  ) {
+    this.logger = this.loggerService.forContext(RedisService.name);
     if (!RedisService.client) {
       RedisService.client = createClient({
-        url: configService.get("REDIS_URL") || 'redis://localhost:6379',
+        url: configService.get('REDIS_URL') || 'redis://localhost:6379',
       });
 
-      RedisService.client.on('error', (err) => this.logger.fatal(err));
+      RedisService.client.on('error', (err) => this.logger.error(err));
 
       RedisService.client.connect().then(() => {
-        this.logger.debug('Redis Database connected');
+        this.logger.warn('Redis Connected');
       });
     }
   }

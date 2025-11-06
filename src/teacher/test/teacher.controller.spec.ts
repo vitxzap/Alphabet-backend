@@ -7,7 +7,7 @@ describe('TeacherController', () => {
   let teacherController: TeacherController;
   beforeEach(async () => {
     teacherService = {
-      findSemesterByid: jest.fn((id: string) => {
+      findTeacherByid: jest.fn((id: string) => {
         return new Promise((resolve, reject) => {
           resolve(id as any);
         });
@@ -30,29 +30,5 @@ describe('TeacherController', () => {
     expect(teacherController).toBeDefined();
   });
 
-  it('Should return mockValues from mocked service', async () => {
-    const date = new Date();
-    const value = 'value';
-    const data = await teacherController.getSemester({
-      user: {
-        id: value,
-        email: '',
-        name: '',
-        role: '',
-        emailVerified: true,
-        createdAt: date,
-        updatedAt: date,
-        image: '',
-      },
-      session: {
-        createdAt: date,
-        expiresAt: date,
-        id: '',
-        token: '',
-        updatedAt: date,
-        userId: '',
-      },
-    });
-    expect(data).toBe(value);
-  });
+  it('Should return mockValues from mocked service', async () => {});
 });

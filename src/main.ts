@@ -8,24 +8,21 @@ import {
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
 import { APIErrorFilter } from './filters/better-auth.filter';
-/* import * as fs from 'fs'; */
+import { MyLoggerService } from './logger/logger.service';
 async function bootstrap() {
-  /*  const httpsOptions = {
-    key: fs.readFileSync('src/secrets/localhost+2-key.pem'),
-    cert: fs.readFileSync('src/secrets/localhost+2.pem'),
-  }; */
-  const logger = new Logger("Application");
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
-    logger: ['error', 'log', 'warn', 'debug'],
-    /* httpsOptions */
+    bufferLogs: true,
   });
-  //Enable CORS
+  const logger = app.get(MyLoggerService);
+  app.useLogger(logger);
   app.enableCors({
     origin: process.env.UI_URL as string,
     credentials: true,
   });
+
   app.useGlobalPipes(new ValidationPipe());
+
   //Configuring swaggerUI
   const config = new DocumentBuilder()
     .setTitle('Project alphabet')
@@ -35,8 +32,24 @@ async function bootstrap() {
   const documentFactory = SwaggerModule.createDocument(app, config);
   //using scalar to document the api
   app.use(
-    '/api/docs',
-    apiReference({ content: documentFactory, theme: 'bluePlanet' }),
+    '/api/reference',
+    apiReference({
+      sources: [
+        {
+          url: '/api/reference',
+          title: 'API',
+          slug: 'api',
+          content: documentFactory,
+          default: true,
+        },
+        {
+          url: '/api/auth/open-api/generate-schema',
+          title: 'Auth',
+          slug: 'auth',
+        },
+      ],
+      theme: 'kepler',
+    }),
   );
   //Using prisma custom filters
   app.useGlobalFilters(new PrismaClientExceptionFilter());
@@ -46,7 +59,7 @@ async function bootstrap() {
   app.useGlobalFilters(new APIErrorFilter());
   //Listening the server
   await app.listen(process.env.PORT ?? 3050);
-  logger.debug(`Running on port: ${process.env.PORT}`);
+  logger.log(`"Running on: ${await app.getUrl()}`)
 }
 
 bootstrap();

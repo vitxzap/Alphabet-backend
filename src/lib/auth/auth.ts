@@ -1,25 +1,15 @@
 import { betterAuth } from 'better-auth';
 import { admin as adminPlugin, emailOTP, openAPI } from 'better-auth/plugins';
-import { ScalarPreferences } from 'src/lib/auth/common/scalar-preferences';
-import { teacher, coordinator, ac } from './permissions';
-import { userAc, adminAc } from 'better-auth/plugins/admin/access';
 
 // This auth object only exists to make better-auth cli works fine when generating new schemas or migrating
+// To change live things in better-auth, go to the auth.module
 export const AuthInstance = betterAuth({
   //Plugins settings
   plugins: [
     //Generates openAPI documentation at /api/auth/reference
-    openAPI(ScalarPreferences),
+    openAPI({ disableDefaultReference: true }),
     //Using RBAC plugin
-    adminPlugin({
-      ac,
-      roles: {
-        coordinator,
-        teacher,
-        adminAc,
-        userAc,
-      },
-    }),
+    adminPlugin(),
     //Sending Emails settings
     emailOTP({
       overrideDefaultEmailVerification: true,
@@ -52,3 +42,5 @@ export const AuthInstance = betterAuth({
     },
   },
 });
+
+export type Session = typeof AuthInstance.$Infer.Session;
