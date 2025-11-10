@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider = "prisma-client"
+  output = "../generated/prisma"
 }
 
 datasource db {
@@ -82,7 +82,7 @@ model shift {
 }
 
 model course {
-  id         String     @id(map: "class_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id         String     @id(map: "class_pkey") @default(dbgenerated("uuidv7()")) @db.Uuid
   name       String
   code       String     @unique(map: "class_code_key") @db.VarChar(6)
   shiftid    Int
@@ -98,7 +98,7 @@ model course {
 }
 
 model subject {
-  id        String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  id        String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
   name      String     @db.VarChar(64)
   type      Int?
   createdat DateTime?  @default(dbgenerated("CURRENT_DATE")) @db.Date

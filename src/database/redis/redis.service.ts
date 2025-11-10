@@ -16,6 +16,8 @@ export class RedisService {
     if (!RedisService.client) {
       RedisService.client = createClient({
         url: configService.get('REDIS_URL') || 'redis://localhost:6379',
+        password: configService.get('REDIS_PASSWORD'),
+        username: configService.get('REDIS_USER'),
       });
 
       RedisService.client.on('error', (err) => this.logger.error(err));

@@ -4,7 +4,7 @@ import {
   ExceptionFilter,
   HttpStatus,
 } from '@nestjs/common';
-import { Prisma } from 'generated/prisma';
+import { Prisma } from 'generated/prisma/client';
 import { Response } from 'express';
 //Handles with Prisma known errors
 @Catch(Prisma.PrismaClientKnownRequestError) 

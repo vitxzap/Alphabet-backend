@@ -1,5 +1,5 @@
 import { MyLoggerService } from 'src/logger/logger.service';
-import { PrismaClient } from '../../../generated/prisma';
+import { PrismaClient } from 'generated/prisma/client';
 import {
   Global,
   Injectable,

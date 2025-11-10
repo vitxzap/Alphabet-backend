@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma } from 'generated/prisma';
+import { Prisma } from 'generated/prisma/client';
 //Define all errors properties
 export class Exception implements Prisma.PrismaClientKnownRequestError {
   // This class implements PrismaClient exception object in order to apply swagger decorators
