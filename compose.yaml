@@ -1,5 +1,4 @@
 services:
-
   # API 
   api:
     build:
@@ -11,7 +10,6 @@ services:
         restart: true
       redis:
         condition: service_healthy
-    restart: always
     container_name: api
     env_file:
       - .env
@@ -34,6 +32,9 @@ services:
       BETTER_AUTH_URL: ${BETTER_AUTH_URL}
     ports:
       - '${PORT}:${PORT}'
+    volumes:
+      - .:/app
+      - /app/node_modules
 
   # Postgres    
   postgres:
