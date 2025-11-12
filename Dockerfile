@@ -4,10 +4,11 @@ USER app
 WORKDIR /app
 
 COPY package*.json ./
-COPY prisma ./prisma
 RUN npm ci
-COPY --chown=app:app . /app
+COPY . .
+
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-CMD ["npm", "run", "start:dev"]
+RUN chmod +x /entrypoint.sh && \
+    sed -i 's/\r$//' /entrypoint.sh
+    
 ENTRYPOINT ["/entrypoint.sh"]
