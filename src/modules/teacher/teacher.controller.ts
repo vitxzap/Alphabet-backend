@@ -6,12 +6,11 @@ import {
   Session,
   type UserSession,
 } from '@thallesp/nestjs-better-auth';
-import { AuthInstance } from 'src/lib/auth/auth';
 @Controller('/teacher')
 export class TeacherController {
   constructor(
     private teacherService: TeacherService,
-    private authService: AuthService<typeof AuthInstance>,
+    private authService: AuthService,
   ) {}
 
   @AllowAnonymous()

@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { Inject, Logger, Module } from '@nestjs/common';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -7,35 +7,45 @@ import { Auth } from 'better-auth';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { UserModule } from './modules/user/user.module';
-import { AuthConstantModule } from './lib/auth/auth.module';
-import { AUTH_INSTANCE } from './lib/auth/symbols';
 import { ArcjetLogger } from './arcjet-logger/arcjet.logger.service';
 import { ArcjetLoggerModule } from './arcjet-logger/arcjet.logger.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { CacheConfigService } from './database/cache/cache-config.service';
+import { AUTH_CONFIG } from './modules/auth/symbols';
+import { AuthConfigModule } from './modules/auth/auth-config.module';
+import { ResendModule } from 'nestjs-resend';
 @Module({
   imports: [
-    TeacherModule,
-    UserModule,
-    PrismaModule,
-    ArcjetLoggerModule,
-    //ConfigModule settings
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
+    ResendModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          apiKey: configService.getOrThrow('RESEND_API_KEY'),
+        };
+      },
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useClass: CacheConfigService,
+    }),
     // BetterAuth Module setttings
     AuthModule.forRootAsync({
-      imports: [AuthConstantModule.register()],
-      inject: [AUTH_INSTANCE],
-      useFactory: async (auth: Auth) => {
+      imports: [AuthConfigModule],
+      inject: [AUTH_CONFIG],
+      useFactory: async (authConfig) => {
         return {
-          auth: auth,
+          auth: authConfig,
         };
       },
     }),
     //Arcjet Module settings
     ArcjetModule.forRootAsync({
       isGlobal: true,
-      imports: [],
+      imports: [ArcjetLoggerModule],
       inject: [ConfigService, ArcjetLogger],
       useFactory: async (
         configService: ConfigService,
@@ -49,6 +59,9 @@ import { ArcjetLoggerModule } from './arcjet-logger/arcjet.logger.module';
         log: logger,
       }),
     }),
+    TeacherModule,
+    UserModule,
+    PrismaModule,
   ],
   controllers: [],
   providers: [

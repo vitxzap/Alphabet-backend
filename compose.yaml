@@ -1,7 +1,6 @@
 services:
   # API
   api:
-    
     build:
       dockerfile: Dockerfile
       context: .
@@ -11,7 +10,7 @@ services:
         restart: true
       redis:
         condition: service_healthy
-    container_name: api
+    container_name: application
     env_file:
       - .env
     environment:
@@ -38,8 +37,8 @@ services:
 
   # Postgres
   postgres:
-    image: postgres:18.0
-    container_name: database
+    image: postgres:18
+    container_name: postgres
     restart: always
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
