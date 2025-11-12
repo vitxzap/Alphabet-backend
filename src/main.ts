@@ -1,29 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
 } from './filters/prisma.filter';
 import { APIErrorFilter } from './filters/better-auth.filter';
-import { MyLoggerService } from './logger/logger.service';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
-    bufferLogs: true,
   });
-  const logger = app.get(MyLoggerService);
-  app.useLogger(logger);
+
+  //Globals
+  app.useGlobalFilters(new PrismaClientExceptionFilter());
+  app.useGlobalFilters(new PrismaClientValidationFilter());
+  app.useGlobalFilters(new APIErrorFilter());
+  app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: process.env.UI_URL as string,
+    origin: process.env.UI_URL || 'http://localhost:3000',
     credentials: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe());
-
-  //Configuring swaggerUI
+  //Documentation
   const config = new DocumentBuilder()
     .setTitle('Project alphabet')
     .setDescription('The alphabet API endpoints description.')
@@ -51,15 +51,8 @@ async function bootstrap() {
       theme: 'kepler',
     }),
   );
-  //Using prisma custom filters
-  app.useGlobalFilters(new PrismaClientExceptionFilter());
-  //Using prisma custom filters
-  app.useGlobalFilters(new PrismaClientValidationFilter());
-  //Using better auth custom filters
-  app.useGlobalFilters(new APIErrorFilter());
-  //Listening the server
+
   await app.listen(process.env.PORT ?? 3050);
-  logger.log(`"Running on: ${await app.getUrl()}`)
 }
 
 bootstrap();

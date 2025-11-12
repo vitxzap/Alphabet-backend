@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Resend } from 'resend';
-import { generateOTPCodeLayout } from 'src/lib/auth/common/emailVerificationLayout';
+import { generateOTPCodeLayout } from 'src/modules/resend/emailVerificationLayout';
 
 @Injectable()
 export class ResendService {

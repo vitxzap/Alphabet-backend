@@ -3,13 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { betterAuth } from 'better-auth';
 import { openAPI, admin as adminPlugin, emailOTP } from 'better-auth/plugins';
 import { PrismaService } from 'src/database/prisma/prisma.service';
-import { RedisService } from 'src/database/redis/redis.service';
-import { ResendService } from 'src/resend/resend.service';
+import { ResendService } from 'src/modules/resend/resend.service';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { AUTH_INSTANCE } from './symbols';
 import { accessControl, teacher, user, admin } from './permissions';
 
 @Module({})
+// this  module exports the constant Auth config that is going to be used in the AuthModule.ForRootAsync to generate the auth module 
 export class AuthConstantModule {
   static register(): DynamicModule {
     return {
@@ -17,18 +17,15 @@ export class AuthConstantModule {
       providers: [
         ResendService,
         ConfigService,
-        RedisService,
         {
           provide: AUTH_INSTANCE,
-          inject: [RedisService, ResendService, ConfigService, PrismaService],
+          inject: [ ResendService, ConfigService, PrismaService],
           useFactory: async (
-            redisService: RedisService,
             resendService: ResendService,
             configService: ConfigService,
             prismaService: PrismaService,
           ) => {
             //Get the redis client to make possible better-auth execute commands on it
-            const redis = redisService.getRedisClient();
             const auth = betterAuth({
               //Plugins settings
               plugins: [
@@ -92,7 +89,7 @@ export class AuthConstantModule {
               },
               //Redis as a second database settings
               secondaryStorage: {
-                get: async (key: string) => {
+                /* get: async (key: string) => {
                   return await redis.get(key);
                 },
                 set: async (key: string, value: string, ttl: number) => {
@@ -106,7 +103,7 @@ export class AuthConstantModule {
                 },
                 delete: async (key: string) => {
                   await redis.del(key);
-                },
+                }, */
               },
               //Better-auth secret
               secret: configService.getOrThrow('BETTER_AUTH_SECRET'),

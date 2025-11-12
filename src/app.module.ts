@@ -5,20 +5,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ArcjetGuard, ArcjetModule, fixedWindow, shield } from '@arcjet/nest';
 import { Auth } from 'better-auth';
 import { PrismaModule } from './database/prisma/prisma.module';
-import { TeacherModule } from './teacher/teacher.module';
-import { UserModule } from './user/user.module';
+import { TeacherModule } from './modules/teacher/teacher.module';
+import { UserModule } from './modules/user/user.module';
 import { AuthConstantModule } from './lib/auth/auth.module';
 import { AUTH_INSTANCE } from './lib/auth/symbols';
-import { MyLoggerService } from './logger/logger.service';
-import { LoggerModule } from './logger/logger.module';
-import { ArcjetLogger } from './logger/arcjet.logger.service';
-import { ArcjetLoggerModule } from './logger/arcjet.logger.module';
+import { ArcjetLogger } from './arcjet-logger/arcjet.logger.service';
+import { ArcjetLoggerModule } from './arcjet-logger/arcjet.logger.module';
 @Module({
   imports: [
     TeacherModule,
     UserModule,
     PrismaModule,
-    LoggerModule,
     ArcjetLoggerModule,
     //ConfigModule settings
     ConfigModule.forRoot({
@@ -55,9 +52,6 @@ import { ArcjetLoggerModule } from './logger/arcjet.logger.module';
   ],
   controllers: [],
   providers: [
-    //Arcjet Global Guard
-    MyLoggerService,
-
     {
       provide: APP_GUARD,
       useClass: ArcjetGuard,
