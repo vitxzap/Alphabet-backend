@@ -1,6 +1,7 @@
 services:
   # API 
   api:
+    
     build:
       dockerfile: Dockerfile
       context: .
@@ -29,12 +30,9 @@ services:
       ARCJET_ENV: ${ARCJET_ENV}
       ARCJET_KEY: ${ARCJET_KEY}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL} 
     ports:
       - '${PORT}:${PORT}'
-    volumes:
-      - .:/app
-      - /app/node_modules
 
   # Postgres    
   postgres:
