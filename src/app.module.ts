@@ -60,6 +60,7 @@ import { ResendModule } from 'nestjs-resend';
       }),
     }),
     TeacherModule,
+    ArcjetLoggerModule,
     UserModule,
     PrismaModule,
   ],

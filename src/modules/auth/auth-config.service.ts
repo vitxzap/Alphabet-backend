@@ -53,7 +53,7 @@ export const AuthConfigFactory = {
                 await resendService.send({
                   from: from,
                   to: email,
-                  subject: 'Synapse password reset',
+                  subject: 'Synapse Password Reset Request',
                   html: generateOTPCodeLayout(otp),
                 });
                 break;
@@ -72,18 +72,6 @@ export const AuthConfigFactory = {
       emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
-      },
-      socialProviders: {
-        google: {
-          clientId: configService.getOrThrow('GOOGLE_CLIENT_ID'),
-          prompt: 'select_account',
-          clientSecret: configService.getOrThrow('GOOGLE_CLIENT_SECRET'),
-          display: 'popup',
-        },
-        microsoft: {
-          clientId: configService.getOrThrow('MICROSOFT_CLIENT_ID'),
-          clientSecret: configService.getOrThrow('MICROSOFT_CLIENT_SECRET'),
-        },
       },
 
       secondaryStorage: {
