@@ -19,11 +19,8 @@ export const AuthConfigFactory = {
     cacheService: Cache,
   ) => {
     return betterAuth({
-      //Plugins settings
       plugins: [
-        //Generates openAPI documentation at /api/auth/reference
         openAPI({ disableDefaultReference: true }),
-        //Using RBAC plugin
         adminPlugin({
           ac: accessControl,
           roles: {
@@ -33,7 +30,7 @@ export const AuthConfigFactory = {
           },
           adminRoles: ['admin'],
         }),
-        //Sending Emails settings
+
         emailOTP({
           overrideDefaultEmailVerification: true,
           async sendVerificationOTP({ email, otp, type }) {
@@ -69,6 +66,7 @@ export const AuthConfigFactory = {
           },
         }),
       ],
+
       emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
@@ -86,13 +84,27 @@ export const AuthConfigFactory = {
         },
       },
 
+      socialProviders: {
+        google: {
+          clientId: configService.getOrThrow('GOOGLE_CLIENT_ID'),
+          prompt: 'select_account',
+          clientSecret: configService.getOrThrow('GOOGLE_CLIENT_SECRET'),
+          display: 'popup',
+        },
+        microsoft: {
+          clientId: configService.getOrThrow('MICROSOFT_CLIENT_ID'),
+          clientSecret: configService.getOrThrow('MICROSOFT_CLIENT_SECRET'),
+        },
+      },
       session: {
         cookieCache: {
           enabled: true,
         },
       },
+
       secret: configService.getOrThrow('BETTER_AUTH_SECRET'),
       trustedOrigins: [configService.getOrThrow('UI_URL')],
+
       user: {
         additionalFields: {
           course: {
@@ -106,6 +118,7 @@ export const AuthConfigFactory = {
           },
         },
       },
+
       database: prismaAdapter(prismaService, {
         provider: 'postgresql',
       }),
