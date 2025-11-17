@@ -37,7 +37,7 @@ services:
 
   # Postgres
   postgres:
-    image: postgres:18
+    image: postgres:18.1
     container_name: postgres
     restart: always
     healthcheck:
