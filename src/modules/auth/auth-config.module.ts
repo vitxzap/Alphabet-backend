@@ -4,7 +4,7 @@ import { AUTH_CONFIG } from './symbols';
 import { ResendModule } from 'nestjs-resend';
 
 @Module({
-  imports: [ResendModule],
+  imports: [],
   providers: [AuthConfigFactory],
   exports: [AUTH_CONFIG],
 })

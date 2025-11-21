@@ -8,13 +8,14 @@ import { AUTH_CONFIG } from './symbols';
 import { ResendService } from 'nestjs-resend';
 import { Cache } from '@nestjs/cache-manager';
 import { generateOTPCodeLayout } from '../../lib/emails/email-layout';
+import { Environment } from 'config/env';
 
 export const AuthConfigFactory = {
   provide: AUTH_CONFIG,
   inject: [ResendService, ConfigService, PrismaService, Cache],
   useFactory: (
     resendService: ResendService,
-    configService: ConfigService,
+    configService: ConfigService<Environment>,
     prismaService: PrismaService,
     cacheService: Cache,
   ) => {

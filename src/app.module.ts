@@ -1,12 +1,10 @@
-import { Inject, Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ArcjetGuard, ArcjetModule, fixedWindow, shield } from '@arcjet/nest';
-import { Auth } from 'better-auth';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
-import { UserModule } from './modules/user/user.module';
 import { ArcjetLogger } from './arcjet-logger/arcjet.logger.service';
 import { ArcjetLoggerModule } from './arcjet-logger/arcjet.logger.module';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -14,10 +12,12 @@ import { CacheConfigService } from './database/cache/cache-config.service';
 import { AUTH_CONFIG } from './modules/auth/symbols';
 import { AuthConfigModule } from './modules/auth/auth-config.module';
 import { ResendModule } from 'nestjs-resend';
+import { validadeEnv } from 'config/env';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validadeEnv,
       envFilePath: '.env',
     }),
     ResendModule.forRootAsync({
@@ -61,7 +61,6 @@ import { ResendModule } from 'nestjs-resend';
     }),
     TeacherModule,
     ArcjetLoggerModule,
-    UserModule,
     PrismaModule,
   ],
   controllers: [],
