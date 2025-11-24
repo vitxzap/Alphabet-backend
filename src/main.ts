@@ -6,8 +6,8 @@ import { apiReference } from '@scalar/nestjs-api-reference';
 import {
   PrismaClientExceptionFilter,
   PrismaClientValidationFilter,
-} from './filters/prisma.filter';
-import { APIErrorFilter } from './filters/better-auth.filter';
+} from './utils/filters/prisma.filter';
+import { APIErrorFilter } from './utils/filters/better-auth.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,

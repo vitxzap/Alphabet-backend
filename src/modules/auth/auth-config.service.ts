@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { betterAuth, BetterAuthOptions } from 'better-auth';
+import { betterAuth, BetterAuthOptions } from 'better-auth/minimal';
 import { openAPI, admin as adminPlugin, emailOTP } from 'better-auth/plugins';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
@@ -7,7 +7,7 @@ import { accessControl, teacher, user, admin } from './permissions';
 import { AUTH_CONFIG } from './symbols';
 import { ResendService } from 'nestjs-resend';
 import { Cache } from '@nestjs/cache-manager';
-import { generateOTPCodeLayout } from '../../lib/emails/email-layout';
+import { generateOTPCodeLayout } from '../../utils/emails/email-layout';
 import { Environment } from 'config/env';
 
 export const AuthConfigFactory = {
@@ -35,9 +35,7 @@ export const AuthConfigFactory = {
         emailOTP({
           overrideDefaultEmailVerification: true,
           async sendVerificationOTP({ email, otp, type }) {
-            const from = await configService.getOrThrow(
-              'RESEND_DEFAULT_EMAIL_ORIGIN',
-            );
+            const from = configService.getOrThrow('RESEND_DEFAULT_EMAIL_ORIGIN');
             switch (type) {
               case 'sign-in':
                 await resendService.send({

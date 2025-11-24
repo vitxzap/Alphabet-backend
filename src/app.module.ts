@@ -5,14 +5,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ArcjetGuard, ArcjetModule, fixedWindow, shield } from '@arcjet/nest';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
-import { ArcjetLogger } from './arcjet-logger/arcjet.logger.service';
-import { ArcjetLoggerModule } from './arcjet-logger/arcjet.logger.module';
+import { ArcjetLogger } from './utils/arcjet-logger/arcjet.logger.service';
+import { ArcjetLoggerModule } from './utils/arcjet-logger/arcjet.logger.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { CacheConfigService } from './database/cache/cache-config.service';
 import { AUTH_CONFIG } from './modules/auth/symbols';
 import { AuthConfigModule } from './modules/auth/auth-config.module';
 import { ResendModule } from 'nestjs-resend';
-import { validadeEnv } from 'config/env';
+import { Environment, validadeEnv } from 'config/env';
 @Module({
   imports: [
     ConfigModule.forRoot({
