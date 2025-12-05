@@ -1,6 +1,6 @@
 services:
   # API
-  api:
+  api: 
     build:
       dockerfile: Dockerfile
       context: .
@@ -56,6 +56,8 @@ services:
       - .env
     networks:
       - backend
+    ports:
+      - '5432:5432'
 
   # Redis
   redis:
@@ -76,6 +78,8 @@ services:
       - .env
     networks:
       - backend
+    ports:
+      - '6379:6379'
 # Volumes
 volumes:
   postgres:

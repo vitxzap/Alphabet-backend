@@ -41,6 +41,7 @@
     "dotenv": "^17.2.3",
     "ioredis": "^5.8.2",
     "nestjs-resend": "^1.1.0",
+    "pg": "^8.16.3",
     "prisma": "^7.0.0",
     "redis": "^5.9.0",
     "reflect-metadata": "^0.2.2",
@@ -94,7 +95,8 @@
       "**/*.(t|j)s"
     ],
     "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/src/$1"
+      "^src/(.*)$": "<rootDir>/src/$1",
+      "^generated/prisma/(.*)$": "<rootDir>/generated/prisma/$1"
     },
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
